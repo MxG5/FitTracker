@@ -10,23 +10,31 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0f0f0f;
-  --bg2: #161616;
-  --bg3: #1e1e1e;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #f0ede8;
-  --muted: #888;
-  --accent: #c8f060;
-  --accent2: #a8d040;
-  --accent-dim: rgba(200,240,96,0.12);
-  --accent-dim2: rgba(200,240,96,0.06);
-  --red: #ff6b6b;
-  --red-dim: rgba(255,107,107,0.12);
-  --blue: #60a8f0;
-  --blue-dim: rgba(96,168,240,0.12);
-  --amber: #f0c060;
-  --amber-dim: rgba(240,192,96,0.12);
+  --bg: #09090f;
+  --bg2: #0f0f1a;
+  --bg3: #16162a;
+  --border: rgba(120,100,255,0.1);
+  --border2: rgba(120,100,255,0.2);
+  --text: #e8e6f0;
+  --muted: #6b6880;
+  --accent: #7c3aed;
+  --accent2: #6d28d9;
+  --accent-dim: rgba(124,58,237,0.15);
+  --accent-dim2: rgba(124,58,237,0.07);
+  --teal: #06b6d4;
+  --teal-dim: rgba(6,182,212,0.12);
+  --purple: #a855f7;
+  --purple-dim: rgba(168,85,247,0.12);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,0.1);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.12);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.12);
+  --green: #10b981;
+  --green-dim: rgba(16,185,129,0.12);
   --font-display: 'Syne', sans-serif;
   --font-mono: 'DM Mono', monospace;
   --r: 8px;
@@ -47,8 +55,8 @@ body {
 .sidebar {
   width: 200px;
   flex-shrink: 0;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
+  background: linear-gradient(180deg, #0d0d1f 0%, #0a0a18 100%);
+  border-right: 1px solid rgba(124,58,237,0.25);
   display: flex;
   flex-direction: column;
   padding: 24px 0;
@@ -80,7 +88,7 @@ body {
   min-height: 48px;
   flex-shrink: 0;
 }
-.sidebar-logo span { color: var(--muted); font-weight: 400; }
+.sidebar-logo span { color: var(--teal); font-weight: 400; }
 .sidebar-logo .logo-text { transition: opacity 0.15s; overflow: hidden; flex: 1; min-width: 0; }
 .sidebar.collapsed .logo-text { opacity: 0; }
 .collapse-btn {
@@ -92,7 +100,7 @@ body {
   position: absolute; left: 12px; top: 16px;
 }
 .sidebar:not(.collapsed) .collapse-btn { position: static; }
-.collapse-btn:hover { color: var(--accent); border-color: var(--accent); }
+.collapse-btn:hover { color: var(--accent); border-color: var(--purple); }
 .nav-item {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 20px;
@@ -107,13 +115,13 @@ body {
   user-select: none;
   white-space: nowrap;
 }
-.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
-.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim2); }
+.nav-item:hover { color: var(--text); background: rgba(124,58,237,0.08); }
+.nav-item.active { color: var(--purple); border-left-color: var(--purple); background: rgba(124,58,237,0.1); }
 .nav-icon { font-size: 14px; flex-shrink: 0; min-width: 14px; text-align: center; }
 .nav-label { transition: opacity 0.15s; }
 .sidebar.collapsed .nav-label { opacity: 0; pointer-events: none; }
 .sidebar-section {
-  font-size: 10px; color: rgba(255,255,255,0.2); text-transform: uppercase;
+  font-size: 10px; color: rgba(168,85,247,0.4); text-transform: uppercase;
   letter-spacing: 0.1em; padding: 16px 20px 6px;
   white-space: nowrap; transition: opacity 0.15s;
 }
@@ -125,9 +133,10 @@ body {
   .main { margin-left: 0 !important; padding: 16px 14px 80px; max-width: 100%; }
   .bottom-nav {
     display: flex !important;
+    align-items: center;
     position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--bg2);
-    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, #0c0c1e 0%, #09091a 100%);
+    border-top: 1px solid rgba(124,58,237,0.3);
     z-index: 200;
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -145,18 +154,87 @@ body {
 }
 
 /* Bottom nav (hidden on desktop) */
-.bottom-nav { display: none; }
+.bottom-nav { display: none; align-items: center; }
 .bottom-nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 10px 4px 8px;
   cursor: pointer; color: var(--muted);
   font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em;
   border: none; background: none; gap: 4px;
-  transition: color 0.15s;
+  transition: color 0.15s, text-shadow 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.bottom-nav-item.active { color: var(--accent); }
+.bottom-nav-item.active { color: var(--purple); text-shadow: 0 0 12px rgba(168,85,247,0.6); }
 .bottom-nav-item .bnav-icon { font-size: 18px; line-height: 1; }
+.bottom-nav-item.center-btn {
+  flex: 0 0 64px;
+  padding: 0;
+  position: relative;
+  top: -14px;
+}
+.center-btn-inner {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--teal) 0%, #0891b2 100%);
+  border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  box-shadow: 0 0 0 3px rgba(6,182,212,0.2), 0 0 20px rgba(6,182,212,0.4);
+  transition: all 0.15s;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.bottom-nav-item.center-btn:active .center-btn-inner,
+.bottom-nav-item.center-btn.active .center-btn-inner {
+  box-shadow: 0 0 0 4px rgba(6,182,212,0.35), 0 0 30px rgba(6,182,212,0.6);
+  transform: scale(0.95);
+}
+.center-btn-inner .bnav-icon { font-size: 22px; line-height: 1; color: #fff; }
+.center-btn-inner span:last-child { font-size: 8px; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-mono); }
+
+/* Templates */
+.template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 4px; }
+.template-card {
+  background: linear-gradient(135deg, #0f0f22 0%, #0c0c1c 100%);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: var(--r);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.template-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--teal));
+}
+.template-card:hover { border-color: rgba(124,58,237,0.5); box-shadow: 0 0 20px rgba(124,58,237,0.15); transform: translateY(-1px); }
+.template-card-name { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.template-card-meta { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.template-card-exercises { font-size: 11px; color: rgba(168,85,247,0.7); line-height: 1.5; }
+.template-card-actions { display: flex; gap: 6px; margin-top: 10px; }
+.tpl-btn {
+  font-size: 10px; padding: 4px 10px; border-radius: 5px; cursor: pointer;
+  font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; border: none;
+  transition: all 0.15s;
+}
+.tpl-btn-use { background: rgba(124,58,237,0.2); color: var(--purple); border: 1px solid rgba(124,58,237,0.35); }
+.tpl-btn-use:hover { background: rgba(124,58,237,0.35); }
+.tpl-btn-del { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+.tpl-btn-del:hover { background: rgba(248,113,113,0.2); }
+.tpl-btn-edit { background: rgba(6,182,212,0.1); color: var(--teal); border: 1px solid rgba(6,182,212,0.25); }
+.tpl-btn-edit:hover { background: rgba(6,182,212,0.2); }
+
+/* Template picker in log form */
+.tpl-picker-wrap { margin-bottom: 16px; }
+.tpl-picker-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block; }
+.tpl-picker-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.tpl-pick-chip {
+  padding: 7px 14px; border-radius: var(--r); font-size: 11px;
+  border: 1px solid rgba(124,58,237,0.25); background: rgba(124,58,237,0.08);
+  color: var(--purple); cursor: pointer; font-family: var(--font-mono);
+  text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.15s;
+}
+.tpl-pick-chip:hover { border-color: var(--purple); background: rgba(124,58,237,0.18); box-shadow: 0 0 12px rgba(124,58,237,0.2); }
 
 /* Panels */
 .panel { display: none; }
@@ -164,28 +242,54 @@ body {
 
 /* Page header */
 .page-header { margin-bottom: 28px; }
-.page-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+.page-title {
+  font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #e8e6f0 0%, var(--purple) 60%, var(--teal) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
 .page-sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
 
 /* Cards */
 .card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #0f0f1e 0%, #0d0d1a 100%);
+  border: 1px solid rgba(124,58,237,0.18);
   border-radius: var(--r2);
   padding: 20px;
   margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
 }
-.card-title { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), rgba(6,182,212,0.4), transparent);
+}
+.card-title { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--purple); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
 
 /* Stats grid */
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
 .stat-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #0f0f20 0%, #0c0c1a 100%);
+  border: 1px solid rgba(124,58,237,0.2);
   border-radius: var(--r);
   padding: 16px;
+  position: relative;
+  overflow: hidden;
 }
-.stat-val { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--accent); }
+.stat-card:nth-child(1) { border-color: rgba(124,58,237,0.35); box-shadow: 0 0 20px rgba(124,58,237,0.08); }
+.stat-card:nth-child(1)::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--purple), var(--accent)); }
+.stat-card:nth-child(2) { border-color: rgba(6,182,212,0.35); box-shadow: 0 0 20px rgba(6,182,212,0.08); }
+.stat-card:nth-child(2)::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--teal), var(--blue)); }
+.stat-card:nth-child(3) { border-color: rgba(59,130,246,0.35); box-shadow: 0 0 20px rgba(59,130,246,0.08); }
+.stat-card:nth-child(3)::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--blue), var(--purple)); }
+.stat-card:nth-child(4) { border-color: rgba(168,85,247,0.35); box-shadow: 0 0 20px rgba(168,85,247,0.08); }
+.stat-card:nth-child(4)::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--accent), var(--pink)); }
+.stat-val { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--purple); }
+.stat-card:nth-child(2) .stat-val { color: var(--teal); }
+.stat-card:nth-child(3) .stat-val { color: var(--blue); }
+.stat-card:nth-child(4) .stat-val { color: var(--purple); }
 .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
 /* Form */
@@ -194,8 +298,8 @@ body {
 .form-group.full { grid-column: 1 / -1; }
 label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 input, select, textarea {
-  background: var(--bg3);
-  border: 1px solid var(--border2);
+  background: #12122a;
+  border: 1px solid rgba(124,58,237,0.25);
   border-radius: var(--r);
   color: var(--text);
   font-family: var(--font-mono);
@@ -204,17 +308,26 @@ input, select, textarea {
   outline: none;
   transition: border-color 0.15s;
 }
-input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+input:focus, select:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(6,182,212,0.12); }
 select option { background: var(--bg3); }
 textarea { resize: vertical; min-height: 60px; }
 
 /* Exercise rows */
 .exercises-container { display: flex; flex-direction: column; gap: 10px; }
 .exercise-block {
-  background: var(--bg3);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #12122a 0%, #0e0e20 100%);
+  border: 1px solid rgba(59,130,246,0.2);
   border-radius: var(--r);
   padding: 14px;
+  position: relative;
+}
+.exercise-block::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--purple), var(--teal));
+  border-radius: 2px 0 0 2px;
 }
 .exercise-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 
@@ -222,8 +335,8 @@ textarea { resize: vertical; min-height: 60px; }
 .ex-dropdown-wrap { flex: 1; position: relative; }
 .ex-search-input {
   width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border2);
+  background: #0d0d1e;
+  border: 1px solid rgba(124,58,237,0.25);
   border-radius: var(--r);
   color: var(--text);
   font-family: var(--font-mono);
@@ -233,7 +346,7 @@ textarea { resize: vertical; min-height: 60px; }
   transition: border-color 0.15s;
   cursor: pointer;
 }
-.ex-search-input:focus { border-color: var(--accent); }
+.ex-search-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(6,182,212,0.12); }
 .ex-search-input.has-value { color: var(--text); }
 .ex-dropdown-arrow {
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
@@ -241,8 +354,8 @@ textarea { resize: vertical; min-height: 60px; }
 }
 .ex-dropdown-list {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  background: #1a1a1a;
-  border: 1px solid var(--border2);
+  background: #0f0f22;
+  border: 1px solid rgba(124,58,237,0.3);
   border-radius: var(--r);
   max-height: 220px;
   overflow-y: auto;
@@ -284,7 +397,7 @@ textarea { resize: vertical; min-height: 60px; }
   padding: 5px 10px; cursor: pointer; font-family: var(--font-mono);
   text-transform: uppercase; letter-spacing: 0.06em; transition: all 0.15s;
 }
-.add-set-btn:hover { color: var(--accent); border-color: var(--accent); }
+.add-set-btn:hover { color: var(--accent); border-color: var(--purple); }
 
 /* Buttons */
 .btn {
@@ -298,8 +411,8 @@ textarea { resize: vertical; min-height: 60px; }
   border: 1px solid var(--border2);
   transition: all 0.15s;
 }
-.btn-accent { background: var(--accent); color: #0f0f0f; border-color: var(--accent); font-weight: 600; }
-.btn-accent:hover { background: var(--accent2); }
+.btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #5b21b6 100%); color: #fff; border-color: var(--purple); font-weight: 600; box-shadow: 0 0 16px rgba(124,58,237,0.3); }
+.btn-accent:hover { background: linear-gradient(135deg, var(--purple) 0%, var(--accent) 100%); box-shadow: 0 0 24px rgba(124,58,237,0.4); }
 .btn-ghost { background: none; color: var(--muted); }
 .btn-ghost:hover { color: var(--text); background: rgba(255,255,255,0.04); }
 .btn-row { display: flex; gap: 10px; margin-top: 16px; }
@@ -320,12 +433,12 @@ textarea { resize: vertical; min-height: 60px; }
 .session-dot {
   width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0;
 }
-.dot-push { background: var(--accent); }
-.dot-pull { background: var(--blue); }
-.dot-legs { background: var(--red); }
-.dot-shoulders { background: var(--amber); }
-.dot-chest { background: var(--accent); }
-.dot-back { background: var(--blue); }
+.dot-push { background: var(--purple); }
+.dot-pull { background: var(--teal); }
+.dot-legs { background: var(--blue); }
+.dot-shoulders { background: var(--pink); }
+.dot-chest { background: var(--purple); }
+.dot-back { background: var(--teal); }
 .dot-arms { background: var(--amber); }
 .dot-full { background: var(--muted); }
 .dot-cardio { background: var(--red); }
@@ -334,7 +447,7 @@ textarea { resize: vertical; min-height: 60px; }
 /* Dead hang bar */
 .hang-bar-wrap { margin-top: 8px; }
 .hang-bar-bg { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
-.hang-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s; }
+.hang-bar-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--teal)); border-radius: 2px; transition: width 0.4s; }
 .hang-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
 
 /* Report */
@@ -353,7 +466,7 @@ textarea { resize: vertical; min-height: 60px; }
   cursor: pointer; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em;
   transition: all 0.15s;
 }
-.goal-chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.goal-chip.active { background: rgba(124,58,237,0.18); border-color: var(--purple); color: var(--purple); }
 
 .report-period { display: flex; gap: 8px; margin-bottom: 16px; }
 .period-btn {
@@ -362,10 +475,10 @@ textarea { resize: vertical; min-height: 60px; }
   cursor: pointer; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em;
   transition: all 0.15s;
 }
-.period-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.period-btn.active { background: rgba(6,182,212,0.12); border-color: var(--teal); color: var(--teal); }
 
 .loading-dots { display: flex; gap: 6px; align-items: center; padding: 12px 0; }
-.ld { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: ldp 1.2s ease-in-out infinite; }
+.ld { width: 5px; height: 5px; border-radius: 50%; background: var(--purple); animation: ldp 1.2s ease-in-out infinite; }
 .ld:nth-child(2) { animation-delay: 0.15s; }
 .ld:nth-child(3) { animation-delay: 0.3s; }
 @keyframes ldp { 0%,100%{opacity:.2;transform:scale(.8)} 50%{opacity:1;transform:scale(1)} }
@@ -377,11 +490,14 @@ textarea { resize: vertical; min-height: 60px; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 
 .result-block {
-  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r);
+  background: linear-gradient(135deg, #0f0f22 0%, #0c0c1c 100%);
+  border: 1px solid rgba(124,58,237,0.18);
+  border-radius: var(--r);
   padding: 16px; margin-bottom: 12px;
+  border-left: 2px solid var(--purple);
 }
 .result-block-label {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--purple); margin-bottom: 8px;
 }
 .result-block-body { font-size: 13px; line-height: 1.75; color: var(--text); }
 .list-item { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; border-bottom: 1px solid var(--border); }
@@ -415,6 +531,9 @@ textarea { resize: vertical; min-height: 60px; }
   <div class="nav-item" onclick="showPanel('history')" id="nav-history">
     <span class="nav-icon">≡</span><span class="nav-label"> Historie</span>
   </div>
+  <div class="nav-item" onclick="showPanel('templates')" id="nav-templates">
+    <span class="nav-icon">⊞</span><span class="nav-label"> Templates</span>
+  </div>
   <div class="sidebar-section">Analyse</div>
   <div class="nav-item" onclick="showPanel('report')" id="nav-report">
     <span class="nav-icon">↗</span><span class="nav-label"> Rapport</span>
@@ -434,13 +553,15 @@ textarea { resize: vertical; min-height: 60px; }
     <span class="bnav-icon">◈</span>
     <span>Home</span>
   </button>
-  <button class="bottom-nav-item" onclick="showPanel('log')" id="bnav-log">
-    <span class="bnav-icon">+</span>
-    <span>Sessie</span>
-  </button>
   <button class="bottom-nav-item" onclick="showPanel('report')" id="bnav-report">
     <span class="bnav-icon">↗</span>
     <span>Rapport</span>
+  </button>
+  <button class="bottom-nav-item center-btn" onclick="showPanel('log')" id="bnav-log">
+    <div class="center-btn-inner">
+      <span class="bnav-icon">+</span>
+      <span>Sessie</span>
+    </div>
   </button>
   <button class="bottom-nav-item" onclick="showPanel('weight')" id="bnav-weight">
     <span class="bnav-icon">◎</span>
@@ -502,6 +623,16 @@ textarea { resize: vertical; min-height: 60px; }
     <div class="page-header">
       <div class="page-title">Sessie loggen</div>
       <div class="page-sub">Voeg een nieuwe trainingssessie toe</div>
+    </div>
+
+    <div class="card" id="tpl-picker-card">
+      <div class="card-title">Template laden</div>
+      <div class="tpl-picker-wrap">
+        <div class="tpl-picker-list" id="tpl-picker-list"></div>
+        <div id="tpl-picker-empty" style="font-size:12px;color:var(--muted);display:none;">
+          Nog geen templates. <span style="color:var(--purple);cursor:pointer;" onclick="showPanel('templates')">Maak er een aan →</span>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -635,7 +766,7 @@ textarea { resize: vertical; min-height: 60px; }
       <div class="card-title">Anthropic API-sleutel</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7;">
         De sleutel wordt alleen opgeslagen in de browser op dit apparaat. Hij wordt nergens anders naartoe gestuurd.<br>
-        Je kunt een sleutel aanmaken op <a href="https://console.anthropic.com/settings/keys" style="color:var(--accent);">console.anthropic.com</a>.
+        Je kunt een sleutel aanmaken op <a href="https://console.anthropic.com/settings/keys" style="color:var(--teal);">console.anthropic.com</a>.
       </p>
       <div class="form-group" style="margin-bottom:12px;">
         <label>API-sleutel</label>
@@ -661,6 +792,51 @@ textarea { resize: vertical; min-height: 60px; }
         <button class="btn btn-ghost" onclick="document.getElementById('import-input').click()">Importeren</button>
         <input type="file" id="import-input" accept=".json" style="display:none;" onchange="importData(event)">
       </div>
+    </div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div class="panel" id="panel-templates">
+    <div class="page-header">
+      <div class="page-title">Templates</div>
+      <div class="page-sub">Sla vaste sessies op om snel te laden</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Nieuwe template</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Naam</label>
+          <input type="text" id="tpl-name" placeholder="bijv. Push dag A">
+        </div>
+        <div class="form-group">
+          <label>Type sessie</label>
+          <select id="tpl-type">
+            <option value="push">Push</option>
+            <option value="pull">Pull + Triceps</option>
+            <option value="legs">Legs</option>
+            <option value="chest">Chest</option>
+            <option value="back">Back + Triceps</option>
+            <option value="shoulders">Shoulders + Arms</option>
+            <option value="arms">Arms</option>
+            <option value="full">Full Body</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="card-title" style="margin-top:8px;">Oefeningen in template</div>
+      <div class="exercises-container" id="tpl-exercises-container"></div>
+      <button class="btn btn-ghost" onclick="addTemplateExercise()" style="margin-top:12px;width:100%;">+ Oefening toevoegen</button>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-accent" onclick="saveTemplate()" id="tpl-save-btn">Template opslaan</button>
+        <button class="btn btn-ghost" onclick="clearTemplateForm()">Wissen</button>
+      </div>
+      <div id="tpl-save-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--teal);">Template opgeslagen!</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Opgeslagen templates</div>
+      <div id="templates-list"></div>
     </div>
   </div>
 
@@ -710,7 +886,7 @@ textarea { resize: vertical; min-height: 60px; }
         </div>
       </div>
       <button class="btn btn-accent" onclick="addWeightEntry()">Meting opslaan</button>
-      <div id="weight-save-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--accent);">Opgeslagen!</div>
+      <div id="weight-save-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--teal);">Opgeslagen!</div>
     </div>
 
     <!-- Goal setting -->
@@ -731,7 +907,7 @@ textarea { resize: vertical; min-height: 60px; }
         </div>
       </div>
       <button class="btn btn-accent" onclick="saveWeightGoal()">Doel opslaan</button>
-      <div id="weight-goal-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--accent);">Doel opgeslagen!</div>
+      <div id="weight-goal-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--teal);">Doel opgeslagen!</div>
     </div>
 
     <!-- History list -->
@@ -770,6 +946,8 @@ function showPanel(name) {
   if (name === 'history') renderHistory();
   if (name === 'settings') renderSettings();
   if (name === 'weight') renderWeightPanel();
+  if (name === 'templates') renderTemplatesPanel();
+  if (name === 'log') renderTemplatePicker();
 }
 
 // ---- Date helpers ----
@@ -846,7 +1024,7 @@ function renderDashboard() {
           <span>${formatDate(s.date)}</span>
           <span style="display:flex;gap:12px;">
             <span style="color:var(--muted);font-size:11px;">gem <b style="color:var(--text)">${avg}s</b></span>
-            <span style="color:var(--muted);font-size:11px;">best <b style="color:var(--accent)">${best}s</b></span>
+            <span style="color:var(--muted);font-size:11px;">best <b style="color:var(--teal)">${best}s</b></span>
           </span>
         </div>
         <div class="hang-bar-bg" style="position:relative;">
@@ -861,8 +1039,8 @@ function renderDashboard() {
   document.getElementById('dash-log-btn-wrap').innerHTML = `
     <button onclick="showPanel('log')" style="
       display:block;width:100%;padding:14px;
-      background:var(--accent-dim);border:1px solid var(--accent);
-      border-radius:var(--r);color:var(--accent);
+      background:rgba(124,58,237,0.12);border:1px solid var(--purple);
+      border-radius:var(--r);color:var(--teal);
       font-family:var(--font-mono);font-size:13px;font-weight:500;
       text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;
       transition:background 0.15s;
@@ -1464,7 +1642,7 @@ function renderReport(d) {
       <div class="result-block-body">${d.volumeAnalyse || ''}</div>
     </div>
     ${(d.gewichtOmhoog||[]).length ? `<div class="result-block">
-      <div class="result-block-label" style="color:var(--accent)">Gewicht omhoog</div>
+      <div class="result-block-label" style="color:var(--teal)">Gewicht omhoog</div>
       ${list(d.gewichtOmhoog)}
     </div>` : ''}
     ${(d.teVeelReps||[]).length ? `<div class="result-block">
@@ -1585,14 +1763,14 @@ function renderWeightPanel() {
     document.getElementById('weight-goal-bar-wrap').innerHTML = `
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;">
         <span>Start: <b style="color:var(--text)">${first.toFixed(1)} kg</b></span>
-        <span>Doel (${dirLabel}): <b style="color:var(--accent)">${goal.kg.toFixed(1)} kg</b></span>
+        <span>Doel (${dirLabel}): <b style="color:var(--teal)">${goal.kg.toFixed(1)} kg</b></span>
       </div>
       <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:8px;">
-        <div style="width:${clamped}%;height:100%;background:var(--accent);border-radius:4px;transition:width 0.4s;"></div>
+        <div style="width:${clamped}%;height:100%;background:linear-gradient(90deg,var(--purple),var(--teal));border-radius:4px;transition:width 0.4s;"></div>
       </div>
       <div style="font-size:12px;color:var(--muted);">
         ${clamped >= 100
-          ? '<span style="color:var(--accent)">Doel bereikt!</span>'
+          ? '<span style="color:var(--teal)">Doel bereikt!</span>'
           : `${clamped}% van het weg — nog <b style="color:var(--text)">${Math.abs(current - goal.kg).toFixed(1)} kg</b> te gaan`
         }
       </div>`;
@@ -1813,6 +1991,202 @@ function importData(event) {
   reader.readAsText(file);
   event.target.value = '';
 }
+// ---- Templates ----
+const TPL_KEY = 'gymlog_templates';
+let editingTemplateId = null;
+let tplExCount = 0;
+
+function getTemplates() {
+  try { return JSON.parse(localStorage.getItem(TPL_KEY) || '[]'); } catch { return []; }
+}
+function saveTemplates(arr) { localStorage.setItem(TPL_KEY, JSON.stringify(arr)); }
+
+function addTemplateExercise(name = '') {
+  const c = document.getElementById('tpl-exercises-container');
+  const id = ++tplExCount;
+  const div = document.createElement('div');
+  div.className = 'exercise-block';
+  div.dataset.tplExId = id;
+  div.innerHTML = `<div class="exercise-header">
+    <div class="ex-dropdown-wrap" id="tplexwrap-${id}">
+      <input class="ex-search-input" type="text" placeholder="Zoek oefening..." autocomplete="off" data-value="${escHtml(name)}" value="${escHtml(name)}">
+      <span class="ex-dropdown-arrow">▼</span>
+      <div class="ex-dropdown-list"></div>
+    </div>
+    <button class="ex-del-btn" onclick="this.closest('.exercise-block').remove()">×</button>
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:6px;">Aantal sets: <input type="number" min="1" max="10" value="3" style="width:48px;display:inline-block;padding:4px 8px;"></div>`;
+  c.appendChild(div);
+
+  const wrap = div.querySelector('.ex-dropdown-wrap');
+  const input = wrap.querySelector('.ex-search-input');
+  input.addEventListener('focus', () => buildDropdown(wrap, input.value));
+  input.addEventListener('input', () => { input.dataset.value = ''; buildDropdown(wrap, input.value); });
+  input.addEventListener('keydown', (e) => {
+    const list = wrap.querySelector('.ex-dropdown-list');
+    const items = [...list.querySelectorAll('.ex-dropdown-item')];
+    const hi = list.querySelector('.highlighted');
+    let idx = items.indexOf(hi);
+    if (e.key === 'ArrowDown') { e.preventDefault(); if(hi)hi.classList.remove('highlighted'); const next=items[Math.min(idx+1,items.length-1)]; if(next){next.classList.add('highlighted');next.scrollIntoView({block:'nearest'});} }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); if(hi)hi.classList.remove('highlighted'); const prev=items[Math.max(idx-1,0)]; if(prev){prev.classList.add('highlighted');prev.scrollIntoView({block:'nearest'});} }
+    else if (e.key === 'Enter') { e.preventDefault(); if(hi){hi.dispatchEvent(new Event('mousedown'));}else if(items.length===1){items[0].dispatchEvent(new Event('mousedown'));} }
+    else if (e.key === 'Escape') { list.classList.remove('open'); input.blur(); }
+  });
+  if (name) input.dataset.value = name;
+}
+
+function saveTemplate() {
+  const name = document.getElementById('tpl-name').value.trim();
+  const type = document.getElementById('tpl-type').value;
+  if (!name) { alert('Geef de template een naam.'); return; }
+
+  const exercises = [];
+  document.querySelectorAll('#tpl-exercises-container .exercise-block').forEach(block => {
+    const inp = block.querySelector('.ex-search-input');
+    const exName = (inp.dataset.value || inp.value || '').trim();
+    if (!exName) return;
+    const setsInput = block.querySelector('input[type="number"][min="1"]');
+    const sets = setsInput ? parseInt(setsInput.value) || 3 : 3;
+    exercises.push({ name: exName, sets });
+  });
+
+  if (exercises.length === 0) { alert('Voeg minimaal één oefening toe.'); return; }
+
+  const templates = getTemplates();
+  if (editingTemplateId !== null) {
+    const idx = templates.findIndex(t => t.id === editingTemplateId);
+    if (idx >= 0) templates[idx] = { ...templates[idx], name, type, exercises };
+    editingTemplateId = null;
+    document.getElementById('tpl-save-btn').textContent = 'Template opslaan';
+  } else {
+    templates.push({ id: Date.now(), name, type, exercises });
+  }
+  saveTemplates(templates);
+
+  document.getElementById('tpl-save-msg').style.display = 'block';
+  setTimeout(() => { document.getElementById('tpl-save-msg').style.display = 'none'; }, 2000);
+  clearTemplateForm();
+  renderTemplatesPanel();
+}
+
+function clearTemplateForm() {
+  document.getElementById('tpl-name').value = '';
+  document.getElementById('tpl-exercises-container').innerHTML = '';
+  tplExCount = 0;
+  editingTemplateId = null;
+  document.getElementById('tpl-save-btn').textContent = 'Template opslaan';
+}
+
+function deleteTemplate(id) {
+  if (!confirm('Template verwijderen?')) return;
+  saveTemplates(getTemplates().filter(t => t.id !== id));
+  renderTemplatesPanel();
+  renderTemplatePicker();
+}
+
+function editTemplate(id) {
+  const tpl = getTemplates().find(t => t.id === id);
+  if (!tpl) return;
+  editingTemplateId = id;
+  document.getElementById('tpl-name').value = tpl.name;
+  document.getElementById('tpl-type').value = tpl.type;
+  document.getElementById('tpl-exercises-container').innerHTML = '';
+  tplExCount = 0;
+  (tpl.exercises || []).forEach(ex => {
+    addTemplateExercise(ex.name);
+    // set the sets count on the last added block
+    const blocks = document.querySelectorAll('#tpl-exercises-container .exercise-block');
+    const last = blocks[blocks.length - 1];
+    if (last) {
+      const setsInput = last.querySelector('input[type="number"][min="1"]');
+      if (setsInput) setsInput.value = ex.sets || 3;
+    }
+  });
+  document.getElementById('tpl-save-btn').textContent = 'Wijzigingen opslaan';
+  // Scroll to form
+  document.getElementById('tpl-name').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function applyTemplate(id) {
+  const tpl = getTemplates().find(t => t.id === id);
+  if (!tpl) return;
+
+  // Switch to log panel
+  showPanel('log');
+
+  // Set session type
+  document.getElementById('sess-type').value = tpl.type;
+
+  // Clear existing exercises and load from template
+  document.getElementById('exercises-container').innerHTML = '';
+  exCount = 0;
+  (tpl.exercises || []).forEach(ex => {
+    addExercise(ex.name);
+    // Add extra sets if needed (default is 1 set, template may have more)
+    const blocks = document.querySelectorAll('#exercises-container .exercise-block');
+    const lastBlock = blocks[blocks.length - 1];
+    const setsContainer = lastBlock ? lastBlock.querySelector('.sets-container') : null;
+    if (setsContainer && ex.sets > 1) {
+      for (let i = 1; i < ex.sets; i++) {
+        const num = setsContainer.querySelectorAll('.set-row').length + 1;
+        setsContainer.insertAdjacentHTML('beforeend', makeSetRow(num));
+      }
+    }
+  });
+
+  // Visual feedback
+  const pickerCard = document.getElementById('tpl-picker-card');
+  pickerCard.style.borderColor = 'rgba(6,182,212,0.5)';
+  pickerCard.style.boxShadow = '0 0 20px rgba(6,182,212,0.15)';
+  setTimeout(() => {
+    pickerCard.style.borderColor = '';
+    pickerCard.style.boxShadow = '';
+  }, 1000);
+}
+
+function renderTemplatesPanel() {
+  const templates = getTemplates();
+  const el = document.getElementById('templates-list');
+  if (!el) return;
+
+  if (templates.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:12px 0;">Nog geen templates. Maak er een aan hierboven.</div>';
+    return;
+  }
+
+  el.innerHTML = `<div class="template-grid">${templates.map(t => {
+    const exList = (t.exercises || []).map(e => `${e.name} (${e.sets}x)`).join(', ');
+    const typeLabel = { push:'Push', pull:'Pull + Triceps', legs:'Legs', chest:'Chest', back:'Back + Triceps', shoulders:'Shoulders + Arms', arms:'Arms', full:'Full Body', other:'Overig' }[t.type] || t.type;
+    return `<div class="template-card">
+      <div class="template-card-name">${t.name}</div>
+      <div class="template-card-meta">${typeLabel} · ${(t.exercises||[]).length} oefeningen</div>
+      <div class="template-card-exercises">${exList}</div>
+      <div class="template-card-actions">
+        <button class="tpl-btn tpl-btn-use" onclick="applyTemplate(${t.id})">Laden</button>
+        <button class="tpl-btn tpl-btn-edit" onclick="editTemplate(${t.id})">Bewerken</button>
+        <button class="tpl-btn tpl-btn-del" onclick="deleteTemplate(${t.id})">×</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderTemplatePicker() {
+  const templates = getTemplates();
+  const listEl = document.getElementById('tpl-picker-list');
+  const emptyEl = document.getElementById('tpl-picker-empty');
+  if (!listEl) return;
+
+  if (templates.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  listEl.innerHTML = templates.map(t =>
+    `<button class="tpl-pick-chip" onclick="applyTemplate(${t.id})">${t.name}</button>`
+  ).join('');
+}
+
 // ---- Sidebar collapse ----
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
