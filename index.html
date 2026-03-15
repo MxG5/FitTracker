@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,6 +40,58 @@
   --r: 8px;
   --r2: 12px;
 }
+
+/* Light mode variables */
+[data-theme="light"] {
+  --bg: #f4f3f8;
+  --bg2: #ffffff;
+  --bg3: #eeedf5;
+  --border: rgba(124,58,237,0.12);
+  --border2: rgba(124,58,237,0.22);
+  --text: #1a1730;
+  --muted: #7c7a8e;
+  --accent: #7c3aed;
+  --accent2: #6d28d9;
+  --accent-dim: rgba(124,58,237,0.1);
+  --accent-dim2: rgba(124,58,237,0.05);
+  --teal: #0891b2;
+  --teal-dim: rgba(8,145,178,0.1);
+  --purple: #7c3aed;
+  --purple-dim: rgba(124,58,237,0.1);
+  --blue: #2563eb;
+  --blue-dim: rgba(37,99,235,0.1);
+  --pink: #db2777;
+  --pink-dim: rgba(219,39,119,0.08);
+  --red: #dc2626;
+  --red-dim: rgba(220,38,38,0.1);
+  --amber: #d97706;
+  --amber-dim: rgba(217,119,6,0.1);
+  --green: #059669;
+  --green-dim: rgba(5,150,105,0.1);
+}
+
+[data-theme="light"] .sidebar {
+  background: linear-gradient(180deg, #f0eeff 0%, #ece9fb 100%);
+  border-right-color: rgba(124,58,237,0.18);
+}
+[data-theme="light"] .card {
+  background: #ffffff;
+  border-color: rgba(124,58,237,0.12);
+}
+[data-theme="light"] .card::before {
+  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), rgba(6,182,212,0.25), transparent);
+}
+[data-theme="light"] .stat-card { background: #ffffff; }
+[data-theme="light"] .exercise-block { background: #f7f6fd; border-color: rgba(124,58,237,0.15); }
+[data-theme="light"] input, [data-theme="light"] select, [data-theme="light"] textarea { background: #f4f3f8; border-color: rgba(124,58,237,0.2); }
+[data-theme="light"] .ex-search-input { background: #f4f3f8; border-color: rgba(124,58,237,0.2); }
+[data-theme="light"] .ex-dropdown-list { background: #ffffff; border-color: rgba(124,58,237,0.2); }
+[data-theme="light"] .bottom-nav { background: linear-gradient(180deg, #f0eeff 0%, #ece9fb 100%); border-top-color: rgba(124,58,237,0.2); }
+[data-theme="light"] .result-block { background: #f9f8ff; }
+[data-theme="light"] .template-card { background: #ffffff; }
+[data-theme="light"] .hang-bar-bg { background: #e8e7f2; }
+[data-theme="light"] ::-webkit-scrollbar-track { background: #f4f3f8; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.2); }
 
 body {
   background: var(--bg);
@@ -582,6 +634,7 @@ textarea { resize: vertical; min-height: 60px; }
       <div>
         <div class="page-title">Dashboard</div>
         <div class="page-sub" id="dash-date"></div>
+        <div id="dash-greeting" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;margin-top:10px;line-height:1.2;"></div>
       </div>
       <button onclick="showPanel('settings')" style="background:none;border:1px solid var(--border2);border-radius:var(--r);color:var(--muted);padding:6px 10px;cursor:pointer;font-size:14px;flex-shrink:0;margin-top:4px;" title="Instellingen">⚙</button>
     </div>
@@ -760,6 +813,26 @@ textarea { resize: vertical; min-height: 60px; }
     <div class="page-header">
       <div class="page-title">Instellingen</div>
       <div class="page-sub">Configureer je Anthropic API-sleutel voor rapporten</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Weergave</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Kies je kleurthema of volg de instelling van je apparaat.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="theme-btns">
+        <button class="tpl-btn" id="theme-btn-auto" onclick="setTheme('auto')" style="padding:8px 16px;font-size:12px;">Automatisch</button>
+        <button class="tpl-btn" id="theme-btn-dark" onclick="setTheme('dark')" style="padding:8px 16px;font-size:12px;">Donker</button>
+        <button class="tpl-btn" id="theme-btn-light" onclick="setTheme('light')" style="padding:8px 16px;font-size:12px;">Licht</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Jouw naam</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Wordt gebruikt voor de begroeting op het dashboard.</p>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="text" id="user-name-input" placeholder="bijv. Max" style="flex:1;max-width:200px;">
+        <button class="btn btn-accent" onclick="saveUserName()">Opslaan</button>
+      </div>
+      <div id="name-save-msg" style="display:none;margin-top:8px;font-size:12px;color:var(--teal);">Naam opgeslagen!</div>
     </div>
 
     <div class="card">
@@ -980,6 +1053,7 @@ const typeLabels = { push:'Push', pull:'Pull + Triceps', legs:'Leg day', shoulde
 
 // ---- DASHBOARD ----
 function renderDashboard() {
+  renderGreeting();
   const now = new Date();
   document.getElementById('dash-date').textContent = now.toLocaleDateString('nl-NL', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
   const sessions = getSessions();
@@ -1272,6 +1346,7 @@ function seedHistoricalData() {
 
 // ---- LOG FORM ----
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   seedHistoricalData();
   document.getElementById('sess-date').value = today();
   renderDashboard();
@@ -1921,6 +1996,11 @@ function getApiKey() {
 }
 
 function renderSettings() {
+  let savedTheme = 'auto';
+  try { savedTheme = localStorage.getItem(THEME_KEY) || 'auto'; } catch {}
+  updateThemeBtns(savedTheme);
+  const nameInput = document.getElementById('user-name-input');
+  if (nameInput) nameInput.value = getUserName();
   const key = getApiKey();
   const input = document.getElementById('api-key-input');
   if (key) {
@@ -2185,6 +2265,95 @@ function renderTemplatePicker() {
   listEl.innerHTML = templates.map(t =>
     `<button class="tpl-pick-chip" onclick="applyTemplate(${t.id})">${t.name}</button>`
   ).join('');
+}
+
+// ---- Theme ----
+const THEME_KEY = 'gymlog_theme';
+let systemDarkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark' || (theme === 'auto' && systemDarkMQ.matches);
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+}
+
+function setTheme(theme) {
+  try { localStorage.setItem(THEME_KEY, theme); } catch {}
+  applyTheme(theme);
+  updateThemeBtns(theme);
+}
+
+function updateThemeBtns(theme) {
+  ['auto','dark','light'].forEach(t => {
+    const btn = document.getElementById('theme-btn-' + t);
+    if (!btn) return;
+    const active = t === theme;
+    btn.style.background = active ? 'rgba(124,58,237,0.2)' : '';
+    btn.style.color = active ? 'var(--purple)' : '';
+    btn.style.borderColor = active ? 'var(--purple)' : '';
+  });
+}
+
+function initTheme() {
+  let saved = 'auto';
+  try { saved = localStorage.getItem(THEME_KEY) || 'auto'; } catch {}
+  applyTheme(saved);
+  updateThemeBtns(saved);
+  // Listen for system changes when in auto mode
+  systemDarkMQ.addEventListener('change', () => {
+    let current = 'auto';
+    try { current = localStorage.getItem(THEME_KEY) || 'auto'; } catch {}
+    if (current === 'auto') applyTheme('auto');
+  });
+}
+
+// Also update theme btns when settings panel opens
+const _origRenderSettings = typeof renderSettings !== 'undefined' ? renderSettings : null;
+
+// ---- Greeting ----
+const NAME_KEY = 'gymlog_username';
+
+function getUserName() {
+  try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; }
+}
+
+function saveUserName() {
+  const val = document.getElementById('user-name-input').value.trim();
+  try { localStorage.setItem(NAME_KEY, val); } catch {}
+  document.getElementById('name-save-msg').style.display = 'block';
+  setTimeout(() => { document.getElementById('name-save-msg').style.display = 'none'; }, 2000);
+  renderGreeting();
+}
+
+function renderGreeting() {
+  const el = document.getElementById('dash-greeting');
+  if (!el) return;
+  const name = getUserName();
+
+  const greetings = name ? [
+    `Welkom terug, ${name}!`,
+    `Goed je te zien, ${name}.`,
+    `Laten we trainen, ${name}!`,
+    `Klaar voor actie, ${name}?`,
+    `Kom op, ${name}. Tijd om te werken.`,
+    `Je bent er weer, ${name}!`,
+    `Maak er iets van, ${name}.`,
+    `Focus. Energie. Jij, ${name}.`,
+    `${name}, vandaag beter dan gisteren.`,
+    `Geen excuses, ${name}. Aan de slag.`,
+  ] : [
+    'Welkom terug!',
+    'Goed je te zien.',
+    'Laten we trainen!',
+    'Klaar voor actie?',
+    'Vandaag beter dan gisteren.',
+    'Geen excuses. Aan de slag.',
+    'Focus. Energie. Laten gaan.',
+    'Maak er iets van vandaag.',
+  ];
+
+  // Pick based on day-of-year so it rotates daily but stays consistent within a day
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  el.textContent = greetings[dayOfYear % greetings.length];
 }
 
 // ---- Sidebar collapse ----
