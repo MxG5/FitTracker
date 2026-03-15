@@ -54,8 +54,16 @@ body {
   padding: 24px 0;
   position: fixed;
   top: 0; left: 0; bottom: 0;
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+  z-index: 100;
 }
-.main { margin-left: 200px; flex: 1; padding: 32px; max-width: 900px; }
+.sidebar.collapsed { width: 48px; }
+.main {
+  margin-left: 200px; flex: 1; padding: 32px; max-width: 900px;
+  transition: margin-left 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.main.collapsed { margin-left: 48px; }
 
 /* Sidebar */
 .sidebar-logo {
@@ -65,8 +73,26 @@ body {
   color: var(--accent);
   padding: 0 20px 24px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  flex-shrink: 0;
 }
 .sidebar-logo span { color: var(--muted); font-weight: 400; }
+.sidebar-logo .logo-text { transition: opacity 0.15s; overflow: hidden; flex: 1; min-width: 0; }
+.sidebar.collapsed .logo-text { opacity: 0; }
+.collapse-btn {
+  width: 24px; height: 24px; flex-shrink: 0;
+  background: none; border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; transition: color 0.15s, border-color 0.15s; padding: 0;
+  position: absolute; left: 12px; top: 16px;
+}
+.sidebar:not(.collapsed) .collapse-btn { position: static; }
+.collapse-btn:hover { color: var(--accent); border-color: var(--accent); }
 .nav-item {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 20px;
@@ -79,11 +105,19 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   user-select: none;
+  white-space: nowrap;
 }
 .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
 .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim2); }
-.nav-icon { font-size: 14px; }
-.sidebar-section { font-size: 10px; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 0.1em; padding: 16px 20px 6px; }
+.nav-icon { font-size: 14px; flex-shrink: 0; min-width: 14px; text-align: center; }
+.nav-label { transition: opacity 0.15s; }
+.sidebar.collapsed .nav-label { opacity: 0; pointer-events: none; }
+.sidebar-section {
+  font-size: 10px; color: rgba(255,255,255,0.2); text-transform: uppercase;
+  letter-spacing: 0.1em; padding: 16px 20px 6px;
+  white-space: nowrap; transition: opacity 0.15s;
+}
+.sidebar.collapsed .sidebar-section { opacity: 0; }
 
 /* Panels */
 .panel { display: none; }
@@ -327,28 +361,31 @@ textarea { resize: vertical; min-height: 60px; }
 <div class="app">
 
 <!-- Sidebar -->
-<nav class="sidebar">
-  <div class="sidebar-logo">GYM<span>.LOG</span></div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-text">GYM<span>.LOG</span></span>
+    <button class="collapse-btn" onclick="toggleSidebar()" id="collapse-btn" title="Menu inklappen">‹</button>
+  </div>
   <div class="sidebar-section">Menu</div>
   <div class="nav-item active" onclick="showPanel('dashboard')" id="nav-dashboard">
-    <span class="nav-icon">◈</span> Dashboard
+    <span class="nav-icon">◈</span><span class="nav-label"> Dashboard</span>
   </div>
   <div class="nav-item" onclick="showPanel('log')" id="nav-log">
-    <span class="nav-icon">+</span> Sessie
+    <span class="nav-icon">+</span><span class="nav-label"> Sessie</span>
   </div>
   <div class="nav-item" onclick="showPanel('history')" id="nav-history">
-    <span class="nav-icon">≡</span> Historie
+    <span class="nav-icon">≡</span><span class="nav-label"> Historie</span>
   </div>
   <div class="sidebar-section">Analyse</div>
   <div class="nav-item" onclick="showPanel('report')" id="nav-report">
-    <span class="nav-icon">↗</span> Rapport
+    <span class="nav-icon">↗</span><span class="nav-label"> Rapport</span>
   </div>
   <div class="nav-item" onclick="showPanel('weight')" id="nav-weight">
-    <span class="nav-icon">◎</span> Gewicht
+    <span class="nav-icon">◎</span><span class="nav-label"> Gewicht</span>
   </div>
   <div style="flex:1;"></div>
   <div class="nav-item" onclick="showPanel('settings')" id="nav-settings">
-    <span class="nav-icon">⚙</span> Instellingen
+    <span class="nav-icon">⚙</span><span class="nav-label"> Instellingen</span>
   </div>
 </nav>
 
@@ -1705,6 +1742,31 @@ function importData(event) {
   reader.readAsText(file);
   event.target.value = '';
 }
+// ---- Sidebar collapse ----
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.querySelector('.main');
+  const btn = document.getElementById('collapse-btn');
+  const collapsed = sidebar.classList.toggle('collapsed');
+  main.classList.toggle('collapsed', collapsed);
+  btn.textContent = collapsed ? '›' : '‹';
+  btn.title = collapsed ? 'Menu uitklappen' : 'Menu inklappen';
+  try { localStorage.setItem('gymlog_sidebar_collapsed', collapsed ? '1' : '0'); } catch {}
+}
+
+// Restore sidebar state on load
+(function() {
+  try {
+    if (localStorage.getItem('gymlog_sidebar_collapsed') === '1') {
+      const sidebar = document.getElementById('sidebar');
+      const main = document.querySelector('.main');
+      const btn = document.getElementById('collapse-btn');
+      if (sidebar) sidebar.classList.add('collapsed');
+      if (main) main.classList.add('collapsed');
+      if (btn) { btn.textContent = '›'; btn.title = 'Menu uitklappen'; }
+    }
+  } catch {}
+})();
 </script>
 </body>
 </html>
