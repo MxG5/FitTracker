@@ -119,6 +119,45 @@ body {
 }
 .sidebar.collapsed .sidebar-section { opacity: 0; }
 
+/* Mobile bottom nav */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0 !important; padding: 16px 14px 80px; max-width: 100%; }
+  .bottom-nav {
+    display: flex !important;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .set-row input { width: 60px; }
+  .btn-row { flex-wrap: wrap; }
+  .page-title { font-size: 20px; }
+  .stat-val { font-size: 22px; }
+  .card { padding: 14px; }
+  .goal-selector { gap: 6px; }
+  .goal-chip { padding: 5px 10px; font-size: 10px; }
+  .report-period { gap: 6px; }
+  .ex-dropdown-list { max-height: 180px; }
+}
+
+/* Bottom nav (hidden on desktop) */
+.bottom-nav { display: none; }
+.bottom-nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 10px 4px 8px;
+  cursor: pointer; color: var(--muted);
+  font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em;
+  border: none; background: none; gap: 4px;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.bottom-nav-item.active { color: var(--accent); }
+.bottom-nav-item .bnav-icon { font-size: 18px; line-height: 1; }
+
 /* Panels */
 .panel { display: none; }
 .panel.active { display: block; }
@@ -389,14 +428,41 @@ textarea { resize: vertical; min-height: 60px; }
   </div>
 </nav>
 
+<!-- Bottom nav (mobile only) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bottom-nav-item active" onclick="showPanel('dashboard')" id="bnav-dashboard">
+    <span class="bnav-icon">◈</span>
+    <span>Home</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('log')" id="bnav-log">
+    <span class="bnav-icon">+</span>
+    <span>Sessie</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('report')" id="bnav-report">
+    <span class="bnav-icon">↗</span>
+    <span>Rapport</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('weight')" id="bnav-weight">
+    <span class="bnav-icon">◎</span>
+    <span>Gewicht</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('history')" id="bnav-history">
+    <span class="bnav-icon">≡</span>
+    <span>Historie</span>
+  </button>
+</nav>
+
 <!-- Main -->
 <main class="main">
 
   <!-- DASHBOARD -->
   <div class="panel active" id="panel-dashboard">
-    <div class="page-header">
-      <div class="page-title">Dashboard</div>
-      <div class="page-sub" id="dash-date"></div>
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="dash-date"></div>
+      </div>
+      <button onclick="showPanel('settings')" style="background:none;border:1px solid var(--border2);border-radius:var(--r);color:var(--muted);padding:6px 10px;cursor:pointer;font-size:14px;flex-shrink:0;margin-top:4px;" title="Instellingen">⚙</button>
     </div>
 
     <div class="stats-grid">
@@ -693,8 +759,13 @@ function saveSessions(arr) {
 function showPanel(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  document.getElementById('nav-' + name).classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  const bnavEl = document.getElementById('bnav-' + name);
+  if (bnavEl) bnavEl.classList.add('active');
+  window.scrollTo(0, 0);
   if (name === 'dashboard') renderDashboard();
   if (name === 'history') renderHistory();
   if (name === 'settings') renderSettings();
