@@ -702,6 +702,7 @@ textarea { resize: vertical; min-height: 60px; }
             <option value="legs">Legs</option>
             <option value="chest">Chest</option>
             <option value="back">Back</option>
+            <option value="chestback">Chest &amp; Back</option>
             <option value="shoulders">Shoulders + Arms</option>
             <option value="arms">Arms</option>
             <option value="full">Full Body</option>
@@ -890,6 +891,7 @@ textarea { resize: vertical; min-height: 60px; }
             <option value="legs">Legs</option>
             <option value="chest">Chest</option>
             <option value="back">Back + Triceps</option>
+            <option value="chestback">Chest &amp; Back</option>
             <option value="shoulders">Shoulders + Arms</option>
             <option value="arms">Arms</option>
             <option value="full">Full Body</option>
@@ -1048,8 +1050,8 @@ function filterByRange(sessions, from, to) {
 }
 
 // ---- Session type colors ----
-const typeColors = { push:'dot-push', pull:'dot-pull', legs:'dot-legs', shoulders:'dot-shoulders', chest:'dot-chest', back:'dot-back', arms:'dot-arms', full:'dot-full', cardio:'dot-cardio', other:'dot-other' };
-const typeLabels = { push:'Push', pull:'Pull + Triceps', legs:'Leg day', shoulders:'Shoulders + Arms', chest:'Chest', back:'Back + Triceps', arms:'Arms', full:'Full Body', cardio:'Cardio', other:'Overig' };
+const typeColors = { push:'dot-push', pull:'dot-pull', legs:'dot-legs', shoulders:'dot-shoulders', chest:'dot-chest', back:'dot-back', chestback:'dot-chest', arms:'dot-arms', full:'dot-full', cardio:'dot-cardio', other:'dot-other' };
+const typeLabels = { push:'Push', pull:'Pull + Triceps', legs:'Leg day', shoulders:'Shoulders + Arms', chest:'Chest', back:'Back + Triceps', chestback:'Chest & Back', arms:'Arms', full:'Full Body', cardio:'Cardio', other:'Overig' };
 
 // ---- DASHBOARD ----
 function renderDashboard() {
@@ -1484,6 +1486,10 @@ function addExercise(name = '') {
     <div class="sets-container" id="sets-${id}">
       ${makeSetRow(1)}
     </div>
+    <label class="per-arm-row">
+      <input type="checkbox" class="per-arm-cb">
+      <span class="per-arm-label">Per arm</span>
+    </label>
     <button class="add-set-btn" onclick="addSet(${id})">+ Set toevoegen</button>`;
   c.appendChild(div);
 
@@ -1543,6 +1549,7 @@ function saveSession() {
     const inp = block.querySelector('.ex-search-input');
     const name = (inp.dataset.value || inp.value || '').trim();
     if (!name) return;
+    const perArm = block.querySelector('.per-arm-cb')?.checked || false;
     const sets = [];
     block.querySelectorAll('.sets-container .set-row').forEach(row => {
       const inputs = row.querySelectorAll('input');
@@ -1550,7 +1557,7 @@ function saveSession() {
       const kg = parseFloat(inputs[1].value);
       if (!isNaN(reps) && reps > 0) sets.push({ reps, kg: isNaN(kg) ? 0 : kg });
     });
-    if (sets.length > 0) exercises.push({ name, sets });
+    if (sets.length > 0) exercises.push({ name, sets, perArm });
   });
 
   if (!date) { alert('Kies een datum.'); return; }
@@ -1588,7 +1595,7 @@ function renderHistory() {
     return;
   }
   el.innerHTML = sessions.map(s => {
-    const exNames = (s.exercises || []).map(e => e.name).join(', ');
+    const exNames = (s.exercises || []).map(e => e.name + (e.perArm ? ' (p/a)' : '')).join(', ');
     const hangStr = s.deadHangs && s.deadHangs.length > 0 ? `Dead hangs: ${s.deadHangs.join('s / ')}s` : '';
     return `<div class="session-item">
       <div class="session-dot ${typeColors[s.type] || 'dot-other'}" style="margin-top:4px;"></div>
@@ -1628,7 +1635,8 @@ function sessionToText(s) {
   if (s.note) txt += ` (${s.note})`;
   if (s.deadHangs && s.deadHangs.length) txt += `\nDead hangs: ${s.deadHangs.map((t,i) => `set ${i+1}: ${t}s`).join(', ')}`;
   (s.exercises || []).forEach(ex => {
-    txt += `\n${ex.name}: ${ex.sets.map((set, i) => `${i+1}: ${set.reps}x${set.kg}kg`).join(' | ')}`;
+    const suffix = ex.perArm ? ' (per arm)' : '';
+    txt += `\n${ex.name}${suffix}: ${ex.sets.map((set, i) => `${i+1}: ${set.reps}x${set.kg}kg`).join(' | ')}`;
   });
   return txt;
 }
@@ -2202,6 +2210,12 @@ function applyTemplate(id) {
   exCount = 0;
   (tpl.exercises || []).forEach(ex => {
     addExercise(ex.name);
+    // restore perArm if stored in template
+    if (ex.perArm) {
+      const blocks = document.querySelectorAll('#exercises-container .exercise-block');
+      const cb = blocks[blocks.length - 1]?.querySelector('.per-arm-cb');
+      if (cb) cb.checked = true;
+    }
     // Add extra sets if needed (default is 1 set, template may have more)
     const blocks = document.querySelectorAll('#exercises-container .exercise-block');
     const lastBlock = blocks[blocks.length - 1];
@@ -2236,7 +2250,7 @@ function renderTemplatesPanel() {
 
   el.innerHTML = `<div class="template-grid">${templates.map(t => {
     const exList = (t.exercises || []).map(e => `${e.name} (${e.sets}x)`).join(', ');
-    const typeLabel = { push:'Push', pull:'Pull + Triceps', legs:'Legs', chest:'Chest', back:'Back + Triceps', shoulders:'Shoulders + Arms', arms:'Arms', full:'Full Body', other:'Overig' }[t.type] || t.type;
+    const typeLabel = { push:'Push', pull:'Pull + Triceps', legs:'Legs', chest:'Chest', back:'Back + Triceps', chestback:'Chest & Back', shoulders:'Shoulders + Arms', arms:'Arms', full:'Full Body', other:'Overig' }[t.type] || t.type;
     return `<div class="template-card">
       <div class="template-card-name">${t.name}</div>
       <div class="template-card-meta">${typeLabel} · ${(t.exercises||[]).length} oefeningen</div>
