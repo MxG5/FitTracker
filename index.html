@@ -130,10 +130,10 @@ input[type="date"].input { -webkit-appearance: none; appearance: none; display: 
 .seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
 
 /* ---------- Beginscherm ---------- */
-.page-home { min-height: 100dvh; display: flex; flex-direction: column; }
+.page-home { display: flex; flex-direction: column; }
 .home-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .home-top .icon-btn { margin: -6px -10px 0 0; }
-.home-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 24px 0 8px; text-align: center; }
+.home-center { min-height: calc(100dvh - 262px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 24px 0 8px; text-align: center; }
 .dial { position: relative; width: min(304px, 84vw); max-width: 100%; aspect-ratio: 1; display: grid; place-items: center; margin-bottom: 14px; }
 .dial svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .ring-seg { fill: none; stroke: var(--track); stroke-width: 6; stroke-linecap: round; }
@@ -155,6 +155,28 @@ input[type="date"].input { -webkit-appearance: none; appearance: none; display: 
 .log-btn b { display: block; font: 800 clamp(40px, 13vw, 54px)/.86 var(--display); text-transform: uppercase; letter-spacing: .015em; }
 .home-stat { font-weight: 600; font-size: 18px; }
 .home-last { color: var(--ink-2); }
+
+/* ---------- Jaarkalender ---------- */
+.cal { display: grid; gap: 16px; }
+.page-home .cal { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 8px; }
+#history-cal { margin: 22px 0 6px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cal-year { display: flex; align-items: center; gap: 2px; }
+.cal-year b, .cal-total { font: 800 42px/.92 var(--display); letter-spacing: .01em; }
+.cal-year b { margin-right: 6px; }
+.cal-total { color: var(--accent); }
+.cal-year .icon-btn[disabled] { opacity: .3; pointer-events: none; }
+.cal-sub { color: var(--ink-2); font-size: 15px; margin-top: -8px; }
+.cal-months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px clamp(14px, 5vw, 28px); }
+.cal-month-head { width: 100%; display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0 8px; font: 700 18px/1 var(--display); text-transform: uppercase; letter-spacing: .07em; }
+.cal-month-head span { font: 500 13.5px/1 var(--font); letter-spacing: 0; color: var(--ink-3); }
+.cal-month.now .cal-month-head b { color: var(--accent); }
+.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-days i { aspect-ratio: 1; border-radius: 28%; background: var(--track); }
+.cal-days i.future { opacity: .45; }
+.cal-days i.on { background: var(--accent); opacity: 1; }
+.cal-days i.today { box-shadow: 0 0 0 1.5px var(--bg), 0 0 0 3px var(--ink); }
+.month { scroll-margin-top: calc(16px + env(safe-area-inset-top, 0px)); }
 
 /* ---------- Tabbalk ---------- */
 .tabs {
@@ -344,6 +366,7 @@ input[type="date"].input { -webkit-appearance: none; appearance: none; display: 
       <p class="home-stat" id="home-stat"></p>
       <p class="home-last" id="home-last"></p>
     </div>
+    <section class="cal" id="home-cal" aria-label="Trainingskalender"></section>
   </section>
 
   <!-- LOGBOEK -->
@@ -352,6 +375,7 @@ input[type="date"].input { -webkit-appearance: none; appearance: none; display: 
       <h1 class="title">Logboek</h1>
       <p class="eyebrow" id="history-count"></p>
     </header>
+    <section class="cal" id="history-cal" aria-label="Trainingskalender"></section>
     <div id="history-list"></div>
   </section>
 
@@ -1062,8 +1086,59 @@ function renderHome(popDate) {
     const last = sessions[0];
     $('#home-last').textContent = last ? `Laatst: ${typeLabel(last.type)}, ${relDay(last.date)}` : 'Tik op de knop voor je eerste sessie';
   }
+  renderCalendar($('#home-cal'));
 }
 render.home = () => renderHome();
+
+/* ---------- Jaarkalender: één vakje per dag, gevuld op trainingsdagen ---------- */
+let calYear = new Date().getFullYear();
+function renderCalendar(host) {
+  const dates = new Set(getSessions().map(s => s.date));
+  const nowY = new Date().getFullYear(), tIso = today();
+  let minY = nowY;
+  dates.forEach(d => { const y = parseInt(d); if (y && y < minY) minY = y; });
+  calYear = clamp(calYear, minY, nowY);
+  let total = 0, months = '';
+  for (let m = 0; m < 12; m++) {
+    const first = new Date(calYear, m, 1), n = new Date(calYear, m + 1, 0).getDate(), key = `${calYear}-${String(m + 1).padStart(2, '0')}`;
+    let cells = '', count = 0;
+    for (let d = 1; d <= n; d++) {
+      const id = `${key}-${String(d).padStart(2, '0')}`, on = dates.has(id);
+      if (on) count++;
+      cells += `<i class="${on ? 'on' : id > tIso ? 'future' : ''}${id === tIso ? ' today' : ''}"${d === 1 ? ` style="grid-column-start:${(first.getDay() + 6) % 7 + 1}"` : ''}></i>`;
+    }
+    total += count;
+    const summary = `${dl(first, { month: 'long' })}: ${plural(count, 'trainingsdag', 'trainingsdagen')}`;
+    const head = `<b>${esc(dl(first, { month: 'short' }))}</b><span class="num">${count}</span>`;
+    months += `<div class="cal-month${key === tIso.slice(0, 7) ? ' now' : ''}">
+      ${count ? `<button type="button" class="cal-month-head" data-month="${key}" aria-label="${esc(summary)}, toon in logboek">${head}</button>` : `<div class="cal-month-head">${head}</div>`}
+      <div class="cal-days" role="img" aria-label="${esc(summary)}">${cells}</div>
+    </div>`;
+  }
+  const step = (dir, label, path) => `<button type="button" class="icon-btn sm" data-cal-step="${dir}" aria-label="${label}"${calYear + dir < minY || calYear + dir > nowY ? ' disabled' : ''}><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"/></svg></button>`;
+  host.innerHTML = `<div class="cal-head">
+      <div class="cal-year"><b class="num">${calYear}</b>${minY < nowY ? step(-1, 'Vorig jaar', 'M15 6l-6 6 6 6') + step(1, 'Volgend jaar', 'M9 6l6 6-6 6') : ''}</div>
+      <b class="cal-total num" aria-label="${plural(total, 'trainingsdag', 'trainingsdagen')} in ${calYear}">${total}</b>
+    </div>
+    <p class="cal-sub">Eén vakje per dag, gevuld als je getraind hebt.</p>
+    <div class="cal-months">${months}</div>`;
+}
+document.addEventListener('click', e => {
+  const stepBtn = e.target.closest('[data-cal-step]');
+  if (stepBtn) {
+    const host = stepBtn.closest('.cal'), dir = stepBtn.dataset.calStep;
+    calYear += +dir;
+    renderCalendar(host);
+    const again = $(`[data-cal-step="${dir}"]:not([disabled])`, host) || $('[data-cal-step]:not([disabled])', host);
+    if (again) again.focus();
+    return;
+  }
+  const monthBtn = e.target.closest('.cal-month-head[data-month]');
+  if (!monthBtn) return;
+  if (current !== 'history') go('history');
+  const heading = document.getElementById('m-' + monthBtn.dataset.month);
+  if (heading) heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 $('#log-btn').addEventListener('click', e => openLog(e.currentTarget));
 $('#open-settings').addEventListener('click', openSettings);
 
@@ -1296,13 +1371,14 @@ $('#picker-list').addEventListener('click', e => {
 /* ---------- Logboek ---------- */
 const openRows = new Set();
 function renderHistory() {
+  renderCalendar($('#history-cal'));
   const sessions = sortedSessions();
   $('#history-count').textContent = sessions.length ? plural(sessions.length, 'sessie', 'sessies') : '';
   if (!sessions.length) { $('#history-list').innerHTML = '<p class="empty">Nog geen sessies. Log je eerste via Vandaag.</p>'; return; }
   let html = '', month = '';
   sessions.forEach(s => {
     const d = parseDate(s.date), m = s.date.slice(0, 7), ex = s.exercises || [], hangs = s.deadHangs || [];
-    if (m !== month) { html += `${month ? '</ul>' : ''}<h2 class="month">${esc(dl(d, { month: 'long', year: 'numeric' }))}</h2><ul class="rows">`; month = m; }
+    if (m !== month) { html += `${month ? '</ul>' : ''}<h2 class="month" id="m-${m}">${esc(dl(d, { month: 'long', year: 'numeric' }))}</h2><ul class="rows">`; month = m; }
     const nSets = ex.reduce((a, e) => a + (e.sets ? e.sets.length : 0), 0);
     const meta = [ex.length ? plural(ex.length, 'oefening', 'oefeningen') : '', nSets ? plural(nSets, 'set', 'sets') : '', hangs.length ? `dead hang ${Math.max(...hangs)}\u00a0s` : ''].filter(Boolean).join(' · ');
     const open = openRows.has(String(s.id));
